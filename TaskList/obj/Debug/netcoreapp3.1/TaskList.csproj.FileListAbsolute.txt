@@ -1,0 +1,11 @@
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\bin\Debug\netcoreapp3.1\TaskList.exe
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\bin\Debug\netcoreapp3.1\TaskList.deps.json
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\bin\Debug\netcoreapp3.1\TaskList.runtimeconfig.json
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\bin\Debug\netcoreapp3.1\TaskList.runtimeconfig.dev.json
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\bin\Debug\netcoreapp3.1\TaskList.dll
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\bin\Debug\netcoreapp3.1\TaskList.pdb
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\obj\Debug\netcoreapp3.1\TaskList.csprojAssemblyReference.cache
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\obj\Debug\netcoreapp3.1\TaskList.AssemblyInfoInputs.cache
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\obj\Debug\netcoreapp3.1\TaskList.AssemblyInfo.cs
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\obj\Debug\netcoreapp3.1\TaskList.dll
+C:\Users\imWUMPUS\source\repos\CSharp_April2020\TaskList\TaskList\obj\Debug\netcoreapp3.1\TaskList.pdb
