@@ -67,11 +67,11 @@ namespace TaskList
             status = false;
         }
 
-        public Task(string _assignedMember, DateTime _dueDate, string _description)
+        public Task(string _description, string _assignedMember, DateTime _dueDate)
         {
+            description = _description;
             assignedMember = _assignedMember;
             dueDate = _dueDate;
-            description = _description;
             status = false;
         }
     }
