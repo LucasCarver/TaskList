@@ -7,13 +7,14 @@ namespace TaskList
     {
         static void Main(string[] args)
         {
-            List<Task> tasks = new List<Task>() {
-            new Task("Joe", DateTime.Parse("12/10/2021"), "Develop the new algorithm"),
-            new Task("Jessica", DateTime.Parse("11/15/2022"), "Arrange a meeting")
+            List<Task> tasks = new List<Task>()
+            {
+                    new Task("Joe", DateTime.Parse("12/10/2021"), "Develop the new sytem"),
+                     new Task("Jessica", DateTime.Parse("11/15/2022"), "Arrange a meeting"),
+                     new Task("Tony", DateTime.Parse("10/14/2022"), "Create the presentation")
             };
-            string input;
+
             int selection = 0;
-            bool validInput;
             bool exitCondition = false;
             List<string> menu = new List<string>() {
                 new string("List tasks"),
@@ -27,25 +28,25 @@ namespace TaskList
 
             while (!exitCondition)
             {
-                validInput = false;
-                // Draw menu -> Get input -> Validate input
-                while (!validInput)
-                {
-                    DrawList(menu);
-                    input = PromptUserInLine("Input menu selection: ");
-                    selection = SelectMenuItem(menu, input);
-                    if (selection != -1)
-                    {
-                        validInput = true;
-                    }
-                }
-                // Make selection
-                exitCondition = MakeSelection(selection, tasks);
+                DrawMenu(menu);
+                exitCondition = MakeSelection(selection, tasks, menu);
             }
         }
 
-        public static bool MakeSelection(int selection, List<Task> tasks)
+        public static bool MakeSelection(int selection, List<Task> tasks, List<string> menu)
         {
+            bool validInput = false;
+            string input;
+            while (!validInput)
+            {
+                input = PromptUserInLine("Input menu selection: ");
+                selection = SelectListItem(menu, input);
+                if (selection != -1)
+                {
+                    validInput = true;
+                }
+            }
+
             if (selection == 1)
             {
                 DrawTasks(tasks);
@@ -79,24 +80,7 @@ namespace TaskList
 
         public static bool QuitRoutine()
         {
-            string input;
-            while (true)
-            {
-                input = PromptUserInLine("Are you sure you wish to quit? Y/N ");
-                if (input != "Y" && input != "N")
-                {
-                    Console.WriteLine("Y or N only please.");
-                    continue;
-                }
-                else if (input == "Y")
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            return AreYouSure("quit");
         }
 
         public static void MarkTaskComplete(List<Task> tasks)
@@ -104,61 +88,35 @@ namespace TaskList
             int temp = -1;
             string input;
             bool validInput = false;
-            string taskToComplete;
-            if (tasks.Count != 0)
-            {
-                while (!validInput)
-                {
-                    DrawTasks(tasks);
-                    input = PromptUserInLine("Please enter task to mark as completed: ");
-                    try
-                    {
-                        temp = SelectTaskItem(tasks, input);
-                        if (temp != -1)
-                        {
-                            validInput = true;
-                        }
-                        taskToComplete = $"{tasks[temp - 1].DueDate.ToShortDateString()} {tasks[temp - 1].AssignedMember} {tasks[temp - 1].Description}";
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    {
-                    }
-                }
-                validInput = false;
-                while (!validInput)
-                {
-                    input = PromptUserInLine($"\nAre you sure you wish to mark task \"{temp}\" as completed? Y/N ").Trim();
-                    if (input != "Y" && input != "N")
-                    {
-                        Console.WriteLine("Invalid input. Y or N only.");
-                        continue;
-                    }
-                    else if (input == "Y")
-                    {
-                        Console.WriteLine($"Item successfully completed");
-                        validInput = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Item not completed. Canceling mark complete operation.");
-                        validInput = true;
-                    }
-                }
-                tasks[temp - 1].TaskComplete = true; ;
-            }
-            else
+            if (IsEmpty(tasks))
             {
                 Console.WriteLine("\nNo tasks to mark as completed. The list is empty.\n");
+                return;
+            }
+            while (!validInput)
+            {
+                DrawTasks(tasks);
+                input = PromptUserInLine("Please enter task to mark as completed: ");
+                temp = SelectListItem(tasks, input);
+                if (temp != -1)
+                {
+                    validInput = true;
+                }
+            }
+            if (AreYouSure($"mark task \"{temp}\" as completed"))
+            {
+                tasks[temp - 1].Status = true;
             }
         }
 
+
         public static void AddTask(List<Task> tasks)
         {
-            DateTime dueDate = AddDueDate();
+            DateTime dueDate = AddDate();
             string assignedMember = AssignMember();
             string description = SetDescription();
             tasks.Add(new Task(assignedMember, dueDate, description));
-            Console.WriteLine($"Task \"{tasks.Count} {assignedMember} {dueDate} {description}\" added successfully.");
+            Console.WriteLine($"\nTask \"{tasks.Count} {assignedMember} {dueDate.ToShortDateString()} {description}\" added successfully.\n");
         }
 
 
@@ -187,6 +145,8 @@ namespace TaskList
             return member;
         }
 
+
+
         public static string SetDescription()
         {
             bool validInput = false;
@@ -212,64 +172,66 @@ namespace TaskList
             return description;
         }
 
+        public static bool IsEmpty<T>(List<T> list)
+        {
+            return list.Count == 0;
+        }
+
         public static void DeleteTask(List<Task> tasks)
         {
             int temp = -1;
-            string justRemoved = "";
             string input;
             bool validInput = false;
-            if (tasks.Count != 0)
-            {
-                while (!validInput)
-                {
-                    DrawTasks(tasks);
 
-                    input = PromptUserInLine("Please enter task to delete: ");
-                    try
-                    {
-                        temp = SelectTaskItem(tasks, input);
-                        if (temp != -1)
-                        {
-                            validInput = true;
-                        }
-                        justRemoved = $"{tasks[temp - 1].DueDate.ToShortDateString()} {tasks[temp - 1].AssignedMember} {tasks[temp - 1].Description}";
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    {
-
-                    }
-                }
-                validInput = false;
-                while (!validInput)
-                {
-                    input = PromptUserInLine($"\nAre you sure you wish to delete task entry\n\"{temp} {justRemoved}\"? Y/N ").Trim();
-                    if (input != "Y" && input != "N")
-                    {
-                        Console.WriteLine("Invalid input. Y or N only.");
-                        continue;
-                    }
-                    else if (input == "Y")
-                    {
-                        Console.WriteLine($"Item successfully deleted");
-                        validInput = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Item not deleted. Canceling delete operation.");
-                        validInput = true;
-                    }
-                }
-                tasks.RemoveAt(temp - 1);
-            }
-            else
+            if (IsEmpty(tasks))
             {
                 Console.WriteLine("\nNo tasks to delete. The list is empty.\n");
+                return;
+            }
+            while (!validInput)
+            {
+                DrawTasks(tasks);
+                input = PromptUserInLine("Please enter task to delete: ");
+                temp = SelectListItem(tasks, input);
+                if (temp != -1)
+                {
+                    validInput = true;
+                }
+            }
+            if (AreYouSure($"delete task \"{temp} {tasks[temp - 1].Description}\""))
+            {
+                tasks.RemoveAt(temp - 1);
+            }
+
+        }
+
+        public static bool AreYouSure(string message)
+        {
+            string input;
+            while (true)
+            {
+                input = PromptUserInLine($"\nAre you sure you wish to {message}?\n Y/N ").Trim();
+                if (input != "Y" && input != "N")
+                {
+                    Console.WriteLine("Please use Uppercase Y or N only.");
+                    continue;
+                }
+                else if (input == "Y")
+                {
+                    Console.WriteLine($"{message[0].ToString().ToUpper() + message.Substring(1, message.Length - 1)} success.\n");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine($"{message[0].ToString().ToUpper() + message.Substring(1, message.Length - 1)} cancelled.");
+                    return false;
+                }
             }
         }
 
         public static string PromptUser(string message)
         {
-            Console.WriteLine(message);
+            Console.Write(message);
             return Console.ReadLine().Trim();
         }
 
@@ -279,7 +241,7 @@ namespace TaskList
             return Console.ReadLine().Trim();
         }
 
-        public static void DrawList(List<string> list)
+        public static void DrawMenu<T>(List<T> list)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -289,27 +251,25 @@ namespace TaskList
 
         public static void DrawTasks(List<Task> tasks)
         {
-            if (tasks.Count != 0)
-            {
-                Console.WriteLine();
-                string format = "{0,-3}{1,-12}{2,-16}{3,-31}{4,-11}";
-                Console.WriteLine(format, "#", "Due Date", "Member", "Description", "Status");
-                for (int i = 0; i < tasks.Count; i++)
-                {
-                    int index = i + 1;
-                    string date = tasks[i].DueDate.ToShortDateString();
-                    string member = tasks[i].AssignedMember;
-                    string description = tasks[i].Description;
-                    string complete = IsComplete(tasks[i].TaskComplete);
-
-                    Console.WriteLine(format, index, date, member, description, complete);
-                }
-                Console.WriteLine();
-            }
-            else
+            if (IsEmpty(tasks))
             {
                 Console.WriteLine("\nNo tasks to display. The list is empty.\n");
+                return;
             }
+            Console.WriteLine();
+            string format = "{0,-3}{1,-26}{2,-16}{3,-12}{4,-11}";
+            Console.WriteLine(format, "#", "Description", "Member", "Due Date", "Status");
+            for (int i = 0; i < tasks.Count; i++)
+            {
+                int index = i + 1;
+
+                string date = tasks[i].DueDate.ToShortDateString();
+                string member = tasks[i].AssignedMember;
+                string description = tasks[i].Description;
+                string complete = IsComplete(tasks[i].Status);
+                Console.WriteLine(format, index, description, member, date, complete);
+            }
+            Console.WriteLine();
         }
 
         public static string IsComplete(bool status)
@@ -326,33 +286,7 @@ namespace TaskList
             return temp;
         }
 
-        public static int SelectMenuItem(List<string> list, string input)
-        {
-            int temp;
-            try
-            {
-                if (IsEmpty(input))
-                {
-                    throw new Exception("Input can not be empty.");
-                }
-                else if (!int.TryParse(input, out temp))
-                {
-                    throw new Exception("Please input a whole number.");
-                }
-                else if (temp < 1 || temp > list.Count)
-                {
-                    throw new Exception("Input must be a whole number.");
-                }
-                return temp;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return -1;
-        }
-
-        public static int SelectTaskItem(List<Task> list, string input)
+        public static int SelectListItem<T>(List<T> list, string input)
         {
             int temp;
             try
@@ -396,8 +330,8 @@ namespace TaskList
         {
             DrawTasks(tasks);
             string input = PromptUserInLine("Which task would you like to edit: ");
-            int temp = SelectTaskItem(tasks, input);
-            DateTime dueDate = AddDueDate();
+            int temp = SelectListItem(tasks, input);
+            DateTime dueDate = AddDate();
             string member = AssignMember();
             string description = SetDescription();
             tasks[temp - 1].DueDate = dueDate;
@@ -412,58 +346,47 @@ namespace TaskList
 
         public static void ViewTasksDueBy(List<Task> tasks)
         {
-            bool validInput = false;
-            string input;
             DateTime dueBy;
             DateTime dateString;
-            if (tasks.Count != 0)
-            {
-                while (!validInput)
-                {
-                    input = PromptUserInLine("View tasks due before (mm/dd/yy): ");
-                    try
-                    {
-                        dueBy = DateTime.Parse(input);
-                        validInput = true;
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Invalid format.");
-                        continue;
-                    }
-                    string format = "{0,-3}{1,-12}{2,-16}{3,-31}{4,-11}";
-                    Console.WriteLine();
-                    Console.WriteLine(format, "#", "Due Date", "Member", "Description", "Status");
-                    for (int i = 0; i < tasks.Count; i++)
-                    {
-                        dateString = tasks[i].DueDate;
-                        int index = i + 1;
-                        if (DateTime.Compare(dueBy, dateString) >= 0)
-                        {
-                            string date = tasks[i].DueDate.ToShortDateString();
-                            string member = tasks[i].AssignedMember;
-                            string description = tasks[i].Description;
-                            string complete = IsComplete(tasks[i].TaskComplete);
-                            Console.WriteLine(format, index, date, member, description, complete);
-                        }
-                    }
-                    Console.WriteLine();
-                }
-            }
-            else
+            string date;
+            string member;
+            string description;
+            string complete;
+
+            if (IsEmpty(tasks))
             {
                 Console.WriteLine("\nNo tasks to display. The list is empty.\n");
+                return;
             }
+
+            dueBy = AddDate();
+            Console.WriteLine($"Tasks due before {dueBy}:");
+            string format = "{0,-3}{1,-26}{2,-16}{3,-12}{4,-11}";
+            Console.WriteLine(format, "#", "Description", "Member", "Due Date", "Status");
+            for (int i = 0; i < tasks.Count; i++)
+            {
+                dateString = tasks[i].DueDate;
+                int index = i + 1;
+                if (DateTime.Compare(dateString, dueBy) <= 0)
+                {
+                    date = tasks[i].DueDate.ToShortDateString();
+                    member = tasks[i].AssignedMember;
+                    description = tasks[i].Description;
+                    complete = IsComplete(tasks[i].Status);
+                    Console.WriteLine(format, index, description, member, date, complete);
+                }
+            }
+            Console.WriteLine();
         }
 
-        public static DateTime AddDueDate()
+        public static DateTime AddDate()
         {
-            DateTime dueDate = DateTime.Parse("01/01/2020");
+            DateTime dueDate = new DateTime();
             bool validInput = false;
             string input;
             while (!validInput)
             {
-                input = PromptUserInLine("Please enter a due date (mm/dd/yy): ");
+                input = PromptUserInLine("Please enter a date (mm/dd/yy): ");
                 try
                 {
                     dueDate = DateTime.Parse(input);

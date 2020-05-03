@@ -9,7 +9,7 @@ namespace TaskList
         private string assignedMember;
         private DateTime dueDate;
         private string description;
-        private bool taskComplete;
+        private bool status;
 
         public string AssignedMember
         {
@@ -47,15 +47,15 @@ namespace TaskList
             }
         }
 
-        public bool TaskComplete
+        public bool Status
         {
             get
             {
-                return taskComplete;
+                return status;
             }
             set
             {
-                taskComplete = value;
+                status = value;
             }
         }
 
@@ -64,7 +64,7 @@ namespace TaskList
             description = "default description";
             assignedMember = "default member";
             dueDate = DateTime.Parse("01/01/2020");
-            taskComplete = false;
+            status = false;
         }
 
         public Task(string _assignedMember, DateTime _dueDate, string _description)
@@ -72,7 +72,7 @@ namespace TaskList
             assignedMember = _assignedMember;
             dueDate = _dueDate;
             description = _description;
-            taskComplete = false;
+            status = false;
         }
     }
 }
